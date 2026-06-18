@@ -1,0 +1,271 @@
+/* Image Comparison — public viewer. Scoped under .ic-app so it inherits the
+   gallery theme without overriding it, and works on light and dark themes. */
+
+.ic-app {
+  margin: 1em 0;
+  --ic-split: 50;
+}
+
+/* --- toolbar ----------------------------------------------------------- */
+.ic-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  align-items: center;
+  margin-bottom: 0.6em;
+}
+.ic-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25em;
+}
+.ic-extra {
+  margin-left: auto;
+  gap: 0.5em;
+}
+.ic-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.2em;
+  min-height: 2.2em;
+  padding: 0.3em 0.7em;
+  font: inherit;
+  line-height: 1.2;
+  color: inherit;
+  background: rgba(127, 127, 127, 0.14);
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.ic-btn:hover {
+  background: rgba(127, 127, 127, 0.28);
+}
+.ic-btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+.ic-mode-btn[aria-pressed="true"] {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+.ic-zoom-level {
+  min-width: 3.5em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.ic-status {
+  font-size: 0.9em;
+  opacity: 0.85;
+}
+.ic-status.ic-error { color: #c0392b; }
+.ic-status.ic-ok    { color: #1f9d55; }
+
+/* --- stage ------------------------------------------------------------- */
+.ic-stage {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 320px;
+  background: #1b1b1b;
+  border: 1px solid rgba(127, 127, 127, 0.4);
+  border-radius: 6px;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+.ic-stage:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+.ic-viewport {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+.ic-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.ic-img {
+  display: block;
+  max-width: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+.ic-tag {
+  position: absolute;
+  top: 8px;
+  z-index: 3;
+  padding: 0.1em 0.5em;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 3px;
+  pointer-events: none;
+}
+.ic-tag-left  { left: 8px; }
+.ic-tag-right { left: 8px; }
+
+/* side-by-side: two halves, divider hidden */
+.ic-mode-sidebyside .ic-viewport-left  { left: 0;   width: 50%; border-right: 1px solid rgba(255,255,255,0.25); }
+.ic-mode-sidebyside .ic-viewport-right { left: 50%; width: 50%; }
+.ic-mode-sidebyside .ic-divider { display: none; }
+
+/* slider overlay: both viewports fill the stage, right clipped by the split */
+.ic-mode-slider .ic-viewport-left,
+.ic-mode-slider .ic-viewport-right {
+  left: 0;
+  width: 100%;
+}
+.ic-mode-slider .ic-viewport-right {
+  clip-path: inset(0 calc(100% - var(--ic-split) * 1%) 0 0);
+}
+.ic-mode-slider .ic-tag-right { left: auto; right: 8px; }
+
+.ic-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--ic-split) * 1%);
+  width: 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.85);
+  z-index: 4;
+  cursor: ew-resize;
+  transform: translateX(-1px);
+}
+.ic-divider-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+.ic-divider-handle::before,
+.ic-divider-handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin-top: -5px;
+  border: 5px solid transparent;
+}
+.ic-divider-handle::before { left: 4px;  border-right-color: #333; }
+.ic-divider-handle::after  { right: 4px; border-left-color: #333; }
+
+/* --- metadata ---------------------------------------------------------- */
+.ic-meta {
+  display: flex;
+  gap: 1em;
+  margin-top: 0.6em;
+}
+.ic-meta-col {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 0.5em 0.7em;
+  background: rgba(127, 127, 127, 0.12);
+  border-radius: 4px;
+}
+.ic-meta-tag {
+  display: inline-block;
+  margin-right: 0.4em;
+  padding: 0 0.45em;
+  font-weight: bold;
+  background: #3b82f6;
+  color: #fff;
+  border-radius: 3px;
+}
+.ic-meta-name { font-weight: bold; }
+.ic-meta-detail {
+  display: block;
+  margin-top: 0.2em;
+  font-size: 0.88em;
+  opacity: 0.8;
+  word-break: break-word;
+}
+
+.ic-prompt {
+  padding: 1.2em;
+  text-align: center;
+  background: rgba(127, 127, 127, 0.1);
+  border-radius: 6px;
+}
+
+/* --- picker ------------------------------------------------------------ */
+.ic-picker { margin-top: 1.2em; }
+.ic-picker-title small {
+  display: block;
+  font-weight: normal;
+  opacity: 0.75;
+}
+.ic-thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.6em;
+  list-style: none;
+  margin: 0.6em 0 0;
+  padding: 0;
+}
+.ic-thumb {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(127, 127, 127, 0.12);
+}
+.ic-thumb.is-left  { border-color: #3b82f6; }
+.ic-thumb.is-right { border-color: #f59e0b; }
+.ic-thumb-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+}
+.ic-thumb-name {
+  padding: 0.3em 0.4em;
+  font-size: 0.8em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ic-thumb-actions {
+  display: flex;
+  gap: 2px;
+  padding: 0 0.4em 0.4em;
+}
+.ic-pick {
+  flex: 1 1 0;
+  padding: 0.2em 0;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(127, 127, 127, 0.2);
+  border-radius: 3px;
+}
+.ic-pick:hover { background: rgba(127, 127, 127, 0.4); }
+.ic-pick-a.active { background: #3b82f6; color: #fff; }
+.ic-pick-b.active { background: #f59e0b; color: #fff; }
+
+/* gallery toolbar icon used by the Compare buttons */
+.icon-comparison { font-style: normal; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ic-canvas { will-change: auto; }
+}
