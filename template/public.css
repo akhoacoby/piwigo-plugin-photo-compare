@@ -1,0 +1,292 @@
+/* ------------------------------------------------------------------ *
+ * Image Comparison — public (gallery) styles. THEME-NEUTRAL.
+ *
+ * Colours are inherited (color: inherit / currentColor / translucent
+ * rgba surfaces) so the UI is legible on modus dark skins AND on
+ * bootstrap_darkroom. Everything is scoped under #imageComparisonBlock.
+ * ------------------------------------------------------------------ */
+
+#imageComparisonBlock {
+  color: inherit;
+  margin: 1em 0;
+}
+
+#imageComparisonBlock a {
+  color: inherit;
+}
+
+/* ---- Shared surfaces & buttons ---- */
+#imageComparisonBlock .ic-panel {
+  background: rgba(127, 127, 127, 0.12);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 6px;
+  padding: 0.6em 0.9em;
+  margin: 0 0 0.75em;
+}
+
+#imageComparisonBlock .ic-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.35em 0.7em;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.2;
+  text-decoration: none;
+}
+#imageComparisonBlock .ic-btn:hover,
+#imageComparisonBlock .ic-btn:focus-visible {
+  background: rgba(127, 127, 127, 0.18);
+  text-decoration: none;
+}
+#imageComparisonBlock .ic-btn:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+#imageComparisonBlock .ic-btn--active {
+  background: rgba(127, 127, 127, 0.28);
+  font-weight: bold;
+}
+
+/* ---- Toolbar ---- */
+#imageComparisonBlock .ic-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em 1em;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6em;
+}
+#imageComparisonBlock .ic-toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  align-items: center;
+}
+#imageComparisonBlock .ic-sync-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  cursor: pointer;
+}
+
+/* ---- Stage ---- */
+#imageComparisonBlock .ic-stage {
+  position: relative;
+}
+#imageComparisonBlock .ic-viewport {
+  position: relative;
+  overflow: hidden;
+  height: clamp(320px, 68vh, 820px);
+  background: rgba(127, 127, 127, 0.10);
+  border: 1px solid rgba(127, 127, 127, 0.30);
+  border-radius: 6px;
+  touch-action: none; /* let JS own pan gestures */
+}
+#imageComparisonBlock .ic-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
+}
+#imageComparisonBlock .ic-viewport.is-panning .ic-img {
+  cursor: grabbing;
+}
+#imageComparisonBlock .ic-pane {
+  margin: 0;
+}
+#imageComparisonBlock .ic-pane-label {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.9em;
+  text-align: center;
+  opacity: 0.85;
+}
+
+/* side-by-side: two equal panes */
+#imageComparisonBlock .ic-stage--side_by_side {
+  display: flex;
+  gap: 0.75em;
+}
+#imageComparisonBlock .ic-stage--side_by_side .ic-pane {
+  flex: 1 1 0;
+  min-width: 0;
+}
+#imageComparisonBlock .ic-stage--side_by_side .ic-divider {
+  display: none;
+}
+
+/* slider: panes overlap, right one clipped by the divider position */
+#imageComparisonBlock .ic-stage--slider .ic-pane-left {
+  position: relative;
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-right {
+  position: absolute;
+  inset: 0;
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-right .ic-viewport {
+  height: 100%;
+  border-left: 0;
+  clip-path: inset(0 0 0 50%);
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-label {
+  position: absolute;
+  bottom: 0.4em;
+  margin: 0;
+  padding: 0.15em 0.5em;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 0.8em;
+  z-index: 3;
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-left .ic-pane-label {
+  left: 0.4em;
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-right .ic-pane-label {
+  right: 0.4em;
+}
+#imageComparisonBlock .ic-stage--slider .ic-pane-label a {
+  color: #fff;
+}
+
+#imageComparisonBlock .ic-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  z-index: 4;
+  cursor: ew-resize;
+  transform: translateX(-50%);
+}
+#imageComparisonBlock .ic-divider-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+#imageComparisonBlock .ic-divider-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #222;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  font-size: 0.9em;
+}
+#imageComparisonBlock .ic-divider:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+#imageComparisonBlock .ic-hint {
+  margin: 0.6em 0 0;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+/* ---- Picker & featured thumbnail grids ---- */
+#imageComparisonBlock .ic-pick-instructions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6em;
+}
+#imageComparisonBlock .ic-chosen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.5em;
+}
+#imageComparisonBlock .ic-chosen img {
+  height: 48px;
+  width: auto;
+  border-radius: 3px;
+}
+
+#imageComparisonBlock .ic-thumb-grid,
+#imageComparisonBlock .ic-featured-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.75em;
+}
+#imageComparisonBlock .ic-thumb-grid a,
+#imageComparisonBlock .ic-featured-grid a {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid rgba(127, 127, 127, 0.30);
+  border-radius: 6px;
+  padding: 0.4em;
+  background: rgba(127, 127, 127, 0.08);
+}
+#imageComparisonBlock .ic-thumb-grid a:hover,
+#imageComparisonBlock .ic-featured-grid a:hover,
+#imageComparisonBlock .ic-thumb-grid a:focus-visible,
+#imageComparisonBlock .ic-featured-grid a:focus-visible {
+  background: rgba(127, 127, 127, 0.2);
+}
+#imageComparisonBlock .ic-thumb-grid img {
+  display: block;
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+#imageComparisonBlock .ic-featured-thumbs {
+  display: flex;
+  gap: 2px;
+}
+#imageComparisonBlock .ic-featured-thumbs img {
+  width: 50%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+#imageComparisonBlock .ic-thumb-label {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.82em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  #imageComparisonBlock .ic-stage--side_by_side {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #imageComparisonBlock * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
